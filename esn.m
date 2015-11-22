@@ -5,8 +5,10 @@ To run:
 
 x = load("stock_data_clean/KAZ_LDX.TXT" )(1:end-200,:);
 x_val = load("stock_data_clean/KAZ_LDX.TXT" )(end-199:end,:);
-final_internal_state, W_out, W_in, W, predicted = gen_reservoir(x)
-
+[final_internal_state, W_out, W_in, W, predicted] = esn(x);
+get_directional_accuracy(x(51:end, 3), predicted)
+[final_internal_state_val, predicted_val] = esn_generate(x_val(1:end - 1, :), final_internal_state, W_out, W_in, W);
+get_directional_accuracy(x_val, predicted_val)
 #}
 
   reservoir_size = 1000
