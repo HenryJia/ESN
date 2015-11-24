@@ -1,18 +1,50 @@
-function [final_internal_state, W_out, W_in, W, predicted] = esn(x)
+function [final_internal_state, W_out, W_in, W, predicted] = esn(x, leaking_rate = 1)
 
 #{
 To run:
-
+leaking_rate = 0.1
 x = load("stock_data_clean/KAZ_LDX.TXT" )(1:end-200,:);
 x_val = load("stock_data_clean/KAZ_LDX.TXT" )(end-199:end,:);
-[final_internal_state, W_out, W_in, W, predicted] = esn(x);
+[final_internal_state, W_out, W_in, W, predicted] = esn(x, leaking_rate);
 get_directional_accuracy(x(51:end, 3), predicted)
-[final_internal_state_val, predicted_val] = esn_generate(x_val(1:end - 1, :), final_internal_state, W_out, W_in, W);
+[final_internal_state_val, predicted_val] = esn_generate(x_val(1:end - 1, :), final_internal_state, W_out, W_in, W, leaking_rate);
 get_directional_accuracy(x_val, predicted_val)
+mean(abs(predicted ./ x(52:end, 3) - 1))
+mean(abs(predicted_val ./ x_val(2:end, 3) - 1))
+figure(1)
+hold off
+plot(1:size(x_val, 1)-1, x_val(2:end, 3), "bo", "linewidth", 1)
+hold on
+plot(1:size(x_val, 1)-1, predicted_val, "r+", "linewidth", 1)
+hold off
+figure(2)
+hist (abs(predicted_val ./ x_val(2:end, 3) - 1), 10, norm=true);
+
+# Normalized version
+
+leaking_rate = 0.1
+x = load("stock_data_clean/KAZ_LDX.TXT" )(1:end-200,:);
+x_val = load("stock_data_clean/KAZ_LDX.TXT" )(end-199:end,:);
+[x_norm, mu, sigma] = featureNormalize(x);
+x_val_norm = featureNormalizeKnown(x_val, mu, sigma);
+[final_internal_state, W_out, W_in, W, predicted] = esn(x_norm, leaking_rate);
+get_directional_accuracy(x_norm(51:end, 3), predicted)
+[final_internal_state_val, predicted_val] = esn_generate(x_val_norm(1:end - 1, :), final_internal_state, W_out, W_in, W, leaking_rate);
+get_directional_accuracy(x_val_norm, predicted_val)
+mean(abs(featureRecover(predicted, mu, sigma) ./ x(52:end, 3) - 1))
+mean(abs(featureRecover(predicted_val, mu, sigma) ./ x_val(2:end, 3) - 1))
+figure(1)
+hold off
+%plot(1:size(x_val, 1)-1, x_val(2:end, 3), "bo", "linewidth", 1)
+hold on
+plot(1:size(x_val, 1)-1, featureRecover(predicted_val, mu, sigma), "r+", "linewidth", 1)
+hold off
+figure(2)
+hist (abs(featureRecover(predicted_val, mu, sigma) ./ x_val(2:end, 3) - 1), 10, norm=true);
 #}
 
   reservoir_size = 1000
-  leaking_rate = 1
+  leaking_rate
   flush_length = 50
   in_dim = size(x, 2) + 1
 
