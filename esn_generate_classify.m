@@ -1,4 +1,4 @@
-function [final_internal_state, predicted] = esn_generate(x, initial_internal_state, W_out, W_in, W, leaking_rate = 1)
+function [final_internal_state, predicted] = esn_generate_classify(x, initial_internal_state, W_out, W_in, W, leaking_rate = 1)
   in_dim = size(x, 2) + 1;
 
   internal_state = initial_internal_state';
@@ -11,6 +11,6 @@ function [final_internal_state, predicted] = esn_generate(x, initial_internal_st
     final_internal_state(i, :) = [1, x(i, :), internal_state'];
   end
 
-  predicted = final_internal_state * W_out;
+  predicted = sigmoid(final_internal_state * W_out);
   final_internal_state = final_internal_state(end, 7:end);
 end

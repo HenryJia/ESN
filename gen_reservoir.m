@@ -6,8 +6,7 @@ function [W_in, W] = gen_reservoir(reservoir_size, in_dim, W_in_radius = 1, dens
   W = sprand(reservoir_size, reservoir_size, density);
   W = spfun(@rescale, W);
 
-  sr = eigs(W, 1, isreal = true)
-
+  sr = abs(eigs(W, 1))
   W = W / sr * spectral_radius;
-  sr = eigs(W, 1, isreal = true)
+  sr = abs(eigs(W, 1))
 end
