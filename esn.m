@@ -1,4 +1,4 @@
-function [final_internal_state, W_out, predicted] = esn(x, W_in, W, leaking_rate = 1)
+function [final_internal_state, W_out, predicted] = esn(x, y, W_in, W, leaking_rate = 1)
 
 #{
 To run:
@@ -100,8 +100,8 @@ end
     end
   end
 
-  targets = x(flush_length+2:end, 4);
-  data = final_internal_state(1:end - 1, :);
+  targets = y(flush_length+1:end, 1);
+  data = final_internal_state;
 
   W_out = pinv(data' * data + lambda * eye(in_dim + reservoir_size)) * data' * targets ;
 

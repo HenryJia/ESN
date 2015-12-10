@@ -12,5 +12,5 @@ function [final_internal_state, predicted] = esn_generate(x, initial_internal_st
   end
 
   predicted = final_internal_state * W_out;
-  final_internal_state = final_internal_state(end, 7:end);
+  final_internal_state = final_internal_state(end, in_dim + 1:end);
 end
