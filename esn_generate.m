@@ -6,7 +6,16 @@ function [final_internal_state, predicted] = esn_generate(x, initial_internal_st
 
   # Run the reservoir
   for i = 1:size(x, 1)
-    update = tanh(W_in * [1; x(i, :)'] + W * internal_state);
+    #{
+    if (i == 1)
+      update = tanh(W_in * [1; x(i, :)'] + W * internal_state + W_b * predicted(1, 1) / 10000);
+    end
+    if (i > 1)
+      update = tanh(W_in * [1; x(i, :)'] + W * internal_state + W_b * predicted(i - 1, 1) / 10000);
+    end
+    #}
+    update = tanh(W_in * [1; x(i, :)'] + W * internal_state + W_b * x(i, 6));
+
     internal_state = (1 - leaking_rate) * internal_state + leaking_rate * update;
     final_internal_state(i, :) = [1, x(i, :), internal_state'];
   end

@@ -8,11 +8,12 @@ function [final_internal_state, W_out, predicted] = esn(x, y, W_in, W, leaking_r
 
   internal_state = rescale(rand(reservoir_size, 1));
   final_internal_state = zeros(size(x, 1) - flush_length, reservoir_size + in_dim);
-  update = zeros(reservoir_size, 1);  
+  update = zeros(reservoir_size, 1);
 
   # Run the reservoir
   for i = 1:size(x, 1)
-    update = tanh(W_in * [1; x(i, :)'] + W * internal_state);
+    #update = tanh(W_in * [1; x(i, :)'] + W * internal_state + W_b * y(i) / 10000);
+    update = tanh(W_in * [1; x(i, :)'] + W * internal_state + W_b * x(i, 6));
     internal_state = (1 - leaking_rate) * internal_state + leaking_rate * update;
 
     if (i > flush_length)
