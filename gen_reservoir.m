@@ -1,5 +1,4 @@
 function [W_in, W] = gen_reservoir(reservoir_size, in_dim, W_in_radius = 1, density = 0.01, spectral_radius = 1)
-  rand('seed', 0);
 
   W_in = rescale(rand(reservoir_size, in_dim), W_in_radius);
 
